@@ -1,42 +1,40 @@
 import React, { useState } from 'react';
-import LoginForm from './Components/LoginForm'; // Import LoginForm
-import RegisterForm from './Components/RegisterForm'; // Import RegisterForm
-import './App.css'; // Import styling
+import Login from './Components/LoginForm';
+import Register from './Components/RegisterForm';
+import Logout from './Components/Logout';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './Style.css';
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
-  const [showRegister, setShowRegister] = useState(false); // State to show/hide register form
-
-  // Toggle between Login and Register form
-  const handleShowRegister = () => setShowRegister((prev) => !prev);
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [showLogin, setShowLogin] = useState(true); // To toggle between login and register
 
   return (
-    <div className="App">
-      <header>
-        <h1>Welcome to My App</h1>
-      </header>
-
-      {/* Conditionally render LoginForm, RegisterForm, or UserDashboard */}
-      {isLoggedIn ? (
+    <div className="container">
+      {isAuthenticated ? (
         <div>
-          <h2>Welcome, User!</h2>
-          <button onClick={() => setIsLoggedIn(false)}>Logout</button>
+          <h1>Welcome to the App</h1>
+          <Logout setIsAuthenticated={setIsAuthenticated} />
         </div>
       ) : (
         <div>
-          {showRegister ? (
-            <RegisterForm setIsLoggedIn={setIsLoggedIn} />
+          <h1>{showLogin ? 'Login' : 'Register'} Required</h1>
+          {showLogin ? (
+            <Login setIsAuthenticated={setIsAuthenticated} />
           ) : (
-            <LoginForm setIsLoggedIn={setIsLoggedIn} />
+            <Register setIsAuthenticated={setIsAuthenticated} />
           )}
-
-          <button onClick={handleShowRegister}>
-            {showRegister ? 'Go to Login' : 'Go to Register'}
-          </button>
+          <div className="mt-3">
+            <button
+              className="btn btn-link"
+              onClick={() => setShowLogin(!showLogin)}>
+              {showLogin ? 'No account? Register here' : 'Already have an account? Login here'}
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default App;

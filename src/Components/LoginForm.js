@@ -1,53 +1,48 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // To make API requests
+import axios from 'axios';
 
-function LoginForm({ setIsLoggedIn }) {
+const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     try {
-      const response = await axios.post('https://reqres.in/api/login', {
-        email,
-        password,
-      });
-      if (response.data.token) {
-        setIsLoggedIn(true); // Set login status to true
-      }
-    } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      const response = await axios.post('https://reqres.in/api/login', { email, password });
+      setIsAuthenticated(true);
+      localStorage.setItem('token', response.data.token);
+    } catch (error) {
+      setErrorMessage('Invalid credentials, please try again.');
     }
   };
 
   return (
-    <div className="form-container">
+    <div className="container">
       <h2>Login</h2>
-      {error && <div className="error-message">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className="mb-3">
+          <label>Email:</label>
           <input
             type="email"
-            placeholder="Email"
+            className="form-control"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
         </div>
-        <div className="form-group">
+        <div className="mb-3">
+          <label>Password:</label>
           <input
             type="password"
-            placeholder="Password"
+            className="form-control"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
         </div>
-        <button type="submit">Login</button>
+        <button className="btn btn-primary" onClick={handleLogin}>Login</button>
+        {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
       </form>
     </div>
   );
-}
+};
 
-export default LoginForm;
+export default Login;

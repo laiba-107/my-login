@@ -1,66 +1,48 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // To make API requests
+import axios from 'axios';
 
-function RegisterForm({ setIsLoggedIn }) {
-  const [name, setName] = useState('');
+const Register = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleRegister = async () => {
     try {
-      const response = await axios.post('https://reqres.in/api/register', {
-        email,
-        password,
-      });
-      if (response.data.id) {
-        setIsLoggedIn(true); // Set login status to true after successful registration
-        setSuccess('Registration successful! You are now logged in.');
-      }
-    } catch (err) {
-      setError('Registration failed. Please try again.');
+      const response = await axios.post('https://reqres.in/api/register', { email, password });
+      setIsAuthenticated(true);
+      localStorage.setItem('token', response.data.token);
+    } catch (error) {
+      setErrorMessage('Failed to register, please try again.');
     }
   };
 
   return (
-    <div className="form-container">
+    <div className="container">
       <h2>Register</h2>
-      {success && <div className="success-message">{success}</div>}
-      {error && <div className="error-message">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className="mb-3">
+          <label>Email:</label>
           <input
             type="email"
-            placeholder="Email"
+            className="form-control"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
         </div>
-        <div className="form-group">
+        <div className="mb-3">
+          <label>Password:</label>
           <input
             type="password"
-            placeholder="Password"
+            className="form-control"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
         </div>
-        <button type="submit">Register</button>
+        <button className="btn btn-primary" onClick={handleRegister}>Register</button>
+        {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
       </form>
     </div>
   );
-}
+};
 
-export default RegisterForm;
+export default Register;
